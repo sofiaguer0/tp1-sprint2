@@ -4,6 +4,8 @@ import Navbar from './components/Navbar'
 import SearchBar from './components/SearchBar'
 import ItemList from './components/ItemList'
 import ListPanel from './components/ListPanel'
+import { useMyList } from './hooks/useMyList'
+
 
 const App = () => {
   const valorInicial = 0
@@ -13,7 +15,7 @@ const App = () => {
   const handleRestar = () => setCount((prev) => prev - 1)
   const handleReset = () => setCount(valorInicial)
 
-  const [miLista, setMiLista] = useState([])
+  const { miLista, setMiLista, vaciarLista } = useMyList()
   const [busqueda, setBusqueda] = useState('')
 
   const [panelAbierto, setPanelAbierto] = useState(false)
@@ -96,11 +98,12 @@ const App = () => {
       </main>
 
       {panelAbierto && (
-        <ListPanel
-          miLista={miLista}
-          onToggle={handleToggle}
-          onCerrar={() => setPanelAbierto(false)}
-        />
+      <ListPanel
+  miLista={miLista}
+  onToggle={handleToggle}
+  onCerrar={() => setPanelAbierto(false)}
+  onVaciar={vaciarLista}
+/>
       )}
     </div>
   )

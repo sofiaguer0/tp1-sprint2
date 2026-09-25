@@ -1,4 +1,10 @@
-const ListPanel = ({ miLista, onToggle, onCerrar }) => {
+const ListPanel = ({ miLista, onToggle, onCerrar, onVaciar }) => {
+  const handleVaciar = () => {
+    if (confirm('¿Seguro que querés vaciar tu lista? Esta acción no se puede deshacer.')) {
+      onVaciar()
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       {/* overlay */}
@@ -10,17 +16,19 @@ const ListPanel = ({ miLista, onToggle, onCerrar }) => {
       {/* panel */}
       <aside className="relative w-80 bg-(--color-surface) h-full shadow-xl flex flex-col z-10 border-l border-(--color-border)">
         <div className="flex justify-between items-center px-5 py-4 border-b border-(--color-border)">
-          <h2 className="text-xl font-bold text-(--color-text)">
-            Mi lista ({miLista.length})
-          </h2>
-          <button
-            onClick={onCerrar}
-            className="text-(--color-muted) hover:text-(--color-text) text-2xl leading-none transition-colors"
-            aria-label="Cerrar panel"
-          >
-            ✕
-          </button>
-        </div>
+      <h2 className="text-xl font-bold text-(--color-text)">
+        Mi lista ({miLista.length})
+      </h2>
+      {miLista.length > 0 && (
+        <button
+          onClick={handleVaciar}
+          className="text-sm text-(--color-danger) hover:text-(--color-danger-hover) font-semibold transition-colors"
+        >
+          Vaciar mi lista
+        </button>
+      )}
+      <button onClick={onCerrar} aria-label="Cerrar panel">✕</button>
+    </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {miLista.length === 0 ? (
