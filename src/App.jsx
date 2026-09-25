@@ -5,7 +5,7 @@ import SearchBar from './components/SearchBar'
 import ItemList from './components/ItemList'
 import ListPanel from './components/ListPanel'
 import { useMyList } from './hooks/useMyList'
-
+import { useToggle } from './hooks/useToggle'
 
 const App = () => {
   const valorInicial = 0
@@ -15,27 +15,17 @@ const App = () => {
   const handleRestar = () => setCount((prev) => prev - 1)
   const handleReset = () => setCount(valorInicial)
 
-  const { miLista, setMiLista, vaciarLista } = useMyList()
+  const { list: miLista, total, toggle: handleToggle, clear: vaciarLista } = useMyList()
   const [busqueda, setBusqueda] = useState('')
 
-  const [panelAbierto, setPanelAbierto] = useState(false)
+  const [panelAbierto, togglePanel] = useToggle(false)
 
   // Bloque B: actualiza el título de la pestaña cuando cambia la lista
   useEffect(() => {
-    document.title = miLista.length > 0
-      ? `Mi lista (${miLista.length}) | Videojuegos`
+    document.title = total > 0
+      ? `Mi lista (${total}) | Videojuegos`
       : 'Videojuegos'
-  }, [miLista])
-
-  
-  const handleToggle = (item) => {
-    const yaEsta = miLista.some((i) => i.id === item.id)
-    if (yaEsta) {
-      setMiLista((prev) => prev.filter((i) => i.id !== item.id))
-    } else {
-      setMiLista((prev) => [...prev, item])
-    }
-  }
+  }, [total])
 
   // estado derivado: filtra por nombre
   const itemsFiltrados = items.filter((item) =>
@@ -45,8 +35,8 @@ const App = () => {
   return (
     <div className="min-h-screen bg-(--color-bg)">
       <Navbar
-        cantidadEnLista={miLista.length}
-        onAbrirLista={() => setPanelAbierto(true)}
+        cantidadEnLista={total}
+        onAbrirLista={togglePanel}
       />
 
       <main className="px-6 py-8 flex flex-col gap-6">
@@ -54,12 +44,9 @@ const App = () => {
         {/* Contador */}
         <div className="flex flex-col items-center gap-4 py-6 border-b border-(--color-border)">
           <h2 className="text-4xl font-bold text-(--color-text)">Contador: {count}</h2>
-                    <h2 className="text-4xl font-bold text-(--color-text)">
-                    {
-                      count === 10 ? "🎉 ¡Felicidades! " : ":("
-                    }
-
-                    </h2>
+          <h2 className="text-4xl font-bold text-(--color-text)">
+            {count === 10 ? "🎉 ¡Felicidades! " : ":("}
+          </h2>
 
           <div className="flex gap-4">
             <button
@@ -82,6 +69,7 @@ const App = () => {
             </button>
           </div>
         </div>
+
         <SearchBar value={busqueda} onChange={setBusqueda} />
 
         {itemsFiltrados.length === 0 ? (
@@ -98,12 +86,12 @@ const App = () => {
       </main>
 
       {panelAbierto && (
-      <ListPanel
-  miLista={miLista}
-  onToggle={handleToggle}
-  onCerrar={() => setPanelAbierto(false)}
-  onVaciar={vaciarLista}
-/>
+        <ListPanel
+          miLista={miLista}
+          onToggle={handleToggle}
+          onCerrar={togglePanel}
+          onVaciar={vaciarLista}
+        />
       )}
     </div>
   )
